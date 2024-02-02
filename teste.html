@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            background-color: #008080;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #808080;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-container {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #808080;
+            border-radius: 3px;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #008080;
+            color: #ffffff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #card {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+            background-color: #ffffff;
+            padding: 10px;
+            border: 1px solid #808080;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #008080;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #808080;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-container">
+            <label for="username">Username do GitHub:</label>
+            <input type="text" id="username" name="username">
+        </div>
+        <button onclick="fazerRequisicao()">Exibir Card</button>
+        <button onclick="limparCampo()">Limpar</button>
+
+        
+        <div id="card">
+            <h2>Informações do Usuário</h2>
+            <img id="avatar" src="" alt="">
+            <p id="name"></p>
+            <p id="bio"></p>
+            <p id="location"></p>
+        </div>
+    </div>
+    
+</body>
+</html>
+
+<script>
+    function fazerRequisicao() {
+        const username = document.getElementById('username').value;
+        fetch(`https://api.github.com/users/${username}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('avatar').src = data.avatar_url;
+            document.getElementById('avatar').alt = data.name;
+            document.getElementById('name').textContent = 'Nome: ' + data.name;
+            document.getElementById('bio').textContent = 'Bio: ' + data.bio;
+            document.getElementById('location').textContent = 'Localização: ' + data.location;
+            document.getElementById('card').style.display = 'block';
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
+
+    function limparCampo() {
+        document.getElementById('username').value = '';
+        document.getElementById('card').style.display = 'none';
+    }
+</script>
