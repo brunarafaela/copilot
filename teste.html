@@ -74,14 +74,13 @@
             margin: 5px 0;
         }
     </style>
-</head>
-<body>
+</head><body>
     <div class="container">
         <div class="input-container">
             <label for="username">Username do GitHub:</label>
-            <input type="text" id="username" name="username">
+            <input type="text" id="username" name="username" oninput="validarCampo()">
         </div>
-        <button onclick="fazerRequisicao()">Exibir Card</button>
+        <button id="btnRequisicao" onclick="fazerRequisicao()" disabled>Exibir Card</button>
         <button onclick="limparCampo()">Limpar</button>
 
         
@@ -92,16 +91,34 @@
             <p id="bio"></p>
             <p id="location"></p>
         </div>
+        <h2 id="usuarioNaoEncontrado" style="display: none; color: red;">Usuário não encontrado</h2>
     </div>
     
 </body>
 </html>
 
 <script>
+    function validarCampo() {
+        const username = document.getElementById('username').value;
+        const btnRequisicao = document.getElementById('btnRequisicao');
+        
+        if (username.trim() !== '') {
+            btnRequisicao.disabled = false;
+        } else {
+            btnRequisicao.disabled = true;
+        }
+    }
+
     function fazerRequisicao() {
         const username = document.getElementById('username').value;
         fetch(`https://api.github.com/users/${username}`)
-        .then(response => response.json())
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Usuário não encontrado');
+            }
+        })
         .then(data => {
             document.getElementById('avatar').src = data.avatar_url;
             document.getElementById('avatar').alt = data.name;
@@ -109,14 +126,20 @@
             document.getElementById('bio').textContent = 'Bio: ' + data.bio;
             document.getElementById('location').textContent = 'Localização: ' + data.location;
             document.getElementById('card').style.display = 'block';
+            document.getElementById('usuarioNaoEncontrado').style.display = 'none';
         })
         .catch(error => {
             console.error(error);
+            document.getElementById('card').style.display = 'none';
+            document.getElementById('usuarioNaoEncontrado').style.display = 'block';
         });
     }
 
     function limparCampo() {
         document.getElementById('username').value = '';
         document.getElementById('card').style.display = 'none';
+        document.getElementById('usuarioNaoEncontrado').style.display = 'none';
+        document.getElementById('btnRequisicao').disabled = true;
     }
 </script>
+
